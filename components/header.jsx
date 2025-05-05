@@ -14,7 +14,7 @@ import { LayoutDashboard, PenBox } from "lucide-react";
 const Header = () => {
   return (
     <div className="fixed top-o w-full bg-white/80 backdrop-blur-md z-50 border-b">
-      <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <nav className="container mx-auto px-4 py-2 flex items-center justify-between">
         <Link href="/">
           <Image
             src={logo}
@@ -60,7 +60,7 @@ const Header = () => {
           <UserButton 
           appearance={{
             elements:{
-              avatarBox: "w-10 h-10",
+              avatarBox: "w-12 h-12",
             },
           }}
           />
