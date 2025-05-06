@@ -106,6 +106,6 @@ import {
       role: "Financial Advisor",
       image: "https://randomuser.me/api/portraits/women/74.jpg",
       quote:
-        "I recommend Welth to all my clients. The multi-currency support and detailed analytics make it perfect for international investors.",
+        "I recommend QuantEdge to all my clients. The multi-currency support and detailed analytics make it perfect for international investors.",
     },
   ];
