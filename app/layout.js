@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
           {/* footer */}
         <footer className="bg-blue-50 py-6">
             <div className="container mx-auto px-4 text-center text-gray-600">
-              <p>©Aman Singh | India</p>
+              <p>Design & Developed by Aman Singh. All rights reserved.</p>
             </div>
           </footer>
       </body>

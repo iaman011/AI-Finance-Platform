@@ -1,28 +1,53 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import arcjet, { createMiddleware, detectBot, shield } from "@arcjet/next";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-// proctecting the routes in the middleware to check no user can directly go to the follwowing path without signin, (.*) means any routes after dashboard and all
 const isProtectedRoute = createRouteMatcher([
-    "/dashboard(.*)",
-    "/accounts(.*)",
-    "/transaction(.*)",
+  "/dashboard(.*)",
+  "/account(.*)",
+  "/transaction(.*)",
 ]);
 
-export default clerkMiddleware(async(auth,req)=> {
-    const {userId} = await auth();
-
-    // agar userId present nhi hai or user isProtectedRoute ke kisi route pe jane ki kosis kr rha hai toh usse redirect kr do signIn page pe , only signIn can redirect on this page
-    if(!userId && isProtectedRoute(req)) {
-        const {redirectToSignIn} = await auth();
-
-        return redirectToSignIn();
-    }
+// Create Arcjet middleware
+const aj = arcjet({
+  key: process.env.ARCJET_KEY,
+  // characteristics: ["userId"], // Track based on Clerk userId
+  rules: [
+    // Shield protection for content and security
+    shield({
+      mode: "LIVE",
+    }),
+    detectBot({
+      mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
+      allow: [
+        "CATEGORY:SEARCH_ENGINE", // Google, Bing, etc
+        "GO_HTTP", // For Inngest
+        // See the full list at https://arcjet.com/bot-list
+      ],
+    }),
+  ],
 });
+
+// Create base Clerk middleware
+const clerk = clerkMiddleware(async (auth, req) => {
+  const { userId } = await auth();
+
+  if (!userId && isProtectedRoute(req)) {
+    const { redirectToSignIn } = await auth();
+    return redirectToSignIn();
+  }
+
+  return NextResponse.next();
+});
+
+// Chain middlewares - ArcJet runs first, then Clerk
+export default createMiddleware(aj, clerk);
 
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // Always run for API routes
-    '/(api|trpc)(.*)',
+    "/(api|trpc)(.*)",
   ],
 };
