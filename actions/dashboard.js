@@ -40,7 +40,7 @@ export async function getUserAccounts() {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  const user = await findOrCreateUser(userId); // 🟢 updated
+  const user = await findOrCreateUser(userId); // updated
 
   try {
     const accounts = await db.account.findMany({
@@ -91,7 +91,7 @@ export async function createAccount(data) {
       throw new Error("Request blocked");
     }
 
-    const user = await findOrCreateUser(userId); // 🟢 updated
+    const user = await findOrCreateUser(userId); // updated
 
     const balanceFloat = parseFloat(data.balance);
     if (isNaN(balanceFloat)) {
@@ -134,7 +134,7 @@ export async function getDashboardData() {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  const user = await findOrCreateUser(userId); // 🟢 updated
+  const user = await findOrCreateUser(userId); // updated
 
   const transactions = await db.transaction.findMany({
     where: { userId: user.id },
