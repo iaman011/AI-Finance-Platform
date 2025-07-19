@@ -7,10 +7,10 @@ export async function sendEmail({ to, subject, react }) {
 
   try {
     const data = await resend.emails.send({
-      from: "QuantEdge <onboarding@resend.dev>", // Free-tier sender address
+      from: "Finance App <onboarding@resend.dev>",
       to,
       subject,
-      react, // JSX email component
+      react,
     });
 
     return { success: true, data };
