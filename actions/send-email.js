@@ -2,20 +2,21 @@
 
 import { Resend } from "resend";
 
-export async function sendEmail({ to, subject, react }) {
-  const resend = new Resend(process.env.RESEND_API_KEY || "");
+// Initialize Resend instance using your API key from environment variable
+const resend = new Resend(process.env.RESEND_API_KEY);
 
+export async function sendEmail({ subject, react }) {
   try {
     const data = await resend.emails.send({
-      from: "QuantEdge <onboarding@resend.dev>", // Free-tier sender address
-      to,
-      subject,
-      react, // JSX email component
+      from: "QuantEdge <onboarding@resend.dev>",   // ✅ Free tier sender
+      to: "iaman.singh011@gmail.com",               // ✅ Your verified email
+      subject: subject,
+      react: react,                                 // ✅ JSX Component like <ReportEmail />
     });
 
     return { success: true, data };
   } catch (error) {
     console.error("Failed to send email:", error);
-    return { success: false, error };
+    return { success: false, error: error.message || "Unknown error" };
   }
 }
