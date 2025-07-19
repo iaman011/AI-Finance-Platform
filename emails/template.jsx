@@ -9,76 +9,42 @@ import {
   Text,
 } from "@react-email/components";
 
-// Dummy data for preview
-const PREVIEW_DATA = {
-  monthlyReport: {
-    userName: "John Doe",
-    type: "monthly-report",
-    data: {
-      month: "December",
-      stats: {
-        totalIncome: 5000,
-        totalExpenses: 3500,
-        byCategory: {
-          housing: 1500,
-          groceries: 600,
-          transportation: 400,
-          entertainment: 300,
-          utilities: 700,
-        },
-      },
-      insights: [
-        "Your housing expenses are 43% of your total spending - consider reviewing your housing costs.",
-        "Great job keeping entertainment expenses under control this month!",
-        "Setting up automatic savings could help you save 20% more of your income.",
-      ],
-    },
-  },
-  budgetAlert: {
-    userName: "John Doe",
-    type: "budget-alert",
-    data: {
-      percentageUsed: 85,
-      budgetAmount: 4000,
-      totalExpenses: 3400,
-    },
-  },
-};
-
 export default function EmailTemplate({
   userName = "",
   type = "monthly-report",
   data = {},
 }) {
   if (type === "monthly-report") {
+    const income = data?.stats?.totalIncome ?? 0;
+    const expenses = data?.stats?.totalExpenses ?? 0;
+    const net = income - expenses;
+
     return (
       <Html>
         <Head />
-        <Preview>Your Monthly Financial Report</Preview>
+        <Preview>Your Monthly Financial Report from QuantEdge</Preview>
         <Body style={styles.body}>
           <Container style={styles.container}>
             <Heading style={styles.title}>Monthly Financial Report</Heading>
 
             <Text style={styles.text}>Hello {userName},</Text>
             <Text style={styles.text}>
-              Here&rsquo;s your financial summary for {data?.month}:
+              Here&rsquo;s your financial summary for {data?.month ?? "this month"}:
             </Text>
 
             {/* Main Stats */}
             <Section style={styles.statsContainer}>
               <div style={styles.stat}>
                 <Text style={styles.text}>Total Income</Text>
-                <Text style={styles.heading}>${data?.stats.totalIncome}</Text>
+                <Text style={styles.heading}>${income}</Text>
               </div>
               <div style={styles.stat}>
                 <Text style={styles.text}>Total Expenses</Text>
-                <Text style={styles.heading}>${data?.stats.totalExpenses}</Text>
+                <Text style={styles.heading}>${expenses}</Text>
               </div>
               <div style={styles.stat}>
                 <Text style={styles.text}>Net</Text>
-                <Text style={styles.heading}>
-                  ${data?.stats.totalIncome - data?.stats.totalExpenses}
-                </Text>
+                <Text style={styles.heading}>${net}</Text>
               </div>
             </Section>
 
@@ -86,14 +52,12 @@ export default function EmailTemplate({
             {data?.stats?.byCategory && (
               <Section style={styles.section}>
                 <Heading style={styles.heading}>Expenses by Category</Heading>
-                {Object.entries(data?.stats.byCategory).map(
-                  ([category, amount]) => (
-                    <div key={category} style={styles.row}>
-                      <Text style={styles.text}>{category}</Text>
-                      <Text style={styles.text}>${amount}</Text>
-                    </div>
-                  )
-                )}
+                {Object.entries(data?.stats.byCategory).map(([category, amount]) => (
+                  <div key={category} style={styles.row}>
+                    <Text style={styles.text}>{category}</Text>
+                    <Text style={styles.text}>${amount}</Text>
+                  </div>
+                ))}
               </Section>
             )}
 
@@ -110,8 +74,7 @@ export default function EmailTemplate({
             )}
 
             <Text style={styles.footer}>
-              Thank you for using QuantEdge. Keep tracking your finances for better
-              financial health!
+              Thank you for using QuantEdge. Keep tracking your finances for better financial health!
             </Text>
           </Container>
         </Body>
@@ -120,32 +83,34 @@ export default function EmailTemplate({
   }
 
   if (type === "budget-alert") {
+    const percentageUsed = Number(data?.percentageUsed ?? 0).toFixed(1);
+    const budget = data?.budgetAmount ?? 0;
+    const spent = data?.totalExpenses ?? 0;
+    const remaining = budget - spent;
+
     return (
       <Html>
         <Head />
-        <Preview>Budget Alert</Preview>
+        <Preview>Budget Alert from QuantEdge</Preview>
         <Body style={styles.body}>
           <Container style={styles.container}>
             <Heading style={styles.title}>Budget Alert</Heading>
             <Text style={styles.text}>Hello {userName},</Text>
             <Text style={styles.text}>
-              You&rsquo;ve used {data?.percentageUsed.toFixed(1)}% of your
-              monthly budget.
+              You&rsquo;ve used {percentageUsed}% of your monthly budget.
             </Text>
             <Section style={styles.statsContainer}>
               <div style={styles.stat}>
                 <Text style={styles.text}>Budget Amount</Text>
-                <Text style={styles.heading}>${data?.budgetAmount}</Text>
+                <Text style={styles.heading}>${budget}</Text>
               </div>
               <div style={styles.stat}>
                 <Text style={styles.text}>Spent So Far</Text>
-                <Text style={styles.heading}>${data?.totalExpenses}</Text>
+                <Text style={styles.heading}>${spent}</Text>
               </div>
               <div style={styles.stat}>
                 <Text style={styles.text}>Remaining</Text>
-                <Text style={styles.heading}>
-                  ${data?.budgetAmount - data?.totalExpenses}
-                </Text>
+                <Text style={styles.heading}>${remaining}</Text>
               </div>
             </Section>
           </Container>
@@ -153,6 +118,8 @@ export default function EmailTemplate({
       </Html>
     );
   }
+
+  return null;
 }
 
 const styles = {
